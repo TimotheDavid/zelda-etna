@@ -1,6 +1,6 @@
 #!/bin/bash
 
-base="$(pwd)/base_game/files"
+base="$(pwd)/files"
 shuffleBosses=()
 shuffleEnemies=()
 shufflePlayers=()
