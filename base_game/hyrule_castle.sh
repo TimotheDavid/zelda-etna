@@ -12,6 +12,8 @@ enemiesLife=30
 enemiesStr=5
 linkLife=60
 linkStr=15
+bossLife=0
+bossStr=0
 linkLifeBar=""
 id=0
 
@@ -70,6 +72,59 @@ grepShuffleBosses( ){
 	index=${shuffleBosses[$indexBosses]}
 	grepBosses $index
 }
+
+grepShufflePlayers( ){
+        file="$base/players.csv"
+        lastLinesBosses=$( tail -1 $file | cut -d ',' -f1  ) 
+        for ((lines=0; lines<$lastLinesBosses ; lines++ ))
+        do 
+                id=$(tail -n +2  $file  | cut -d ',' -f1 )
+                rarity=$(tail -n +2  $file | cut -d ',' -f13 )
+        for i in $rarity 
+                do
+                        shuffleBosses+=($id)
+                done 
+        done
+        shuffleBosses=$(shuf -e "${shuffleBosses[@]}")
+        randomIndex=$[$RANDOM % ${#shuffleBosses[@]}]
+        index=${shuffleBosses[$indexBosses]}
+        grepPlayers $index
+}
+
+grepShuffleEnemies( ){
+        file="$base/enemies.csv"
+        lastLinesBosses=$( tail -1 $file | cut -d ',' -f1  ) 
+        for ((lines=0; lines<$lastLinesBosses ; lines++ ))
+        do 
+                id=$(tail -n +2  $file  | cut -d ',' -f1 )
+                rarity=$(tail -n +2  $file | cut -d ',' -f13 )
+        for i in $rarity 
+                do
+                        shuffleBosses+=($id)
+                done 
+        done
+        shuffleBosses=$(shuf -e "${shuffleBosses[@]}")
+        randomIndex=$[$RANDOM % ${#shuffleBosses[@]}]
+        index=${shuffleBosses[$indexBosses]}
+        grepEnemies $index
+}
+
+setPlayers( ){
+	linkLife=$( echo $playersLine | cut -d ',' -f3 )
+	linkStr=$( echo $playersLine | cut -d ',' -f5 )
+
+}
+
+setEnenemies( ){
+        enemiesLife=$( echo $enemiesLine | cut -d ',' -f3 )
+        enemiesStr=$( echo $enemiesLine | cut -d ',' -f5 )
+}
+
+setBoss( ){
+	bossLife=$( echo $bossesLine | cut -d ',' -f3 )
+	bossStr=$( echo $bossesLine | cut -d ',' -f5 )
+}
+
 
 showLifeEnemies ( ){
 
@@ -143,7 +198,9 @@ attaque ( ){
 
 
 main( ){
-	
+	grepShuffleBosses
+	setBoss
+
 	for (( id=1; id<11; id++ ))
 	do
 		echo -ne '\033c'
@@ -157,6 +214,8 @@ main( ){
 			attaque $attaqueOptions
 			echo -ne '\033c'
 		done
+		grepShuffleEnemies
+		setEnenemies
 		enemiesLife=30
 
 	done 
@@ -165,8 +224,11 @@ main( ){
 }
 
 testing ( ){
-	grepShuffleBosses
-	echo $bossesLine
+	grepShuffleEnemies
+	echo $enemiesLine
+	setEnenemies
+	echo $enemiesLife
+
 }
-testing 
-#main $1 
+#testing 
+main $1 
