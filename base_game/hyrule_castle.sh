@@ -107,7 +107,6 @@ grepShuffleEnemies( ){
 	shuffleEnemies=$(shuf -e "${shuffleEnemies[@]}")
         randomIndex=$[$RANDOM % ${#shuffleEnemies[@]}]
         index=${shuffleEnemies[$randomIndex]}
-	echo $index 
 	grepEnemies $index
 }
 
@@ -177,6 +176,14 @@ showHeader( ){
 	echo ""
 }
 
+showDeath( ){
+	cat "$base/death.txt"
+	echo "poor link your are death why not next time"
+
+
+
+}
+
 attaque ( ){
 	if  [ $1 -eq 1 ]
 	then
@@ -202,11 +209,8 @@ main( ){
 	setPlayers
 	grepShuffleBosses
 	setBoss
-	grepShuffleEnemies
-	setEnemies
 	for (( id=1; id<11; id++ ))
 	do
-		echo -ne '\033c'
 		while [[ $enemiesLife -gt 1 ]]
 		do
 			showHeader $id
@@ -215,13 +219,14 @@ main( ){
 			showOptions
 			read attaqueOptions
 			attaque $attaqueOptions
+			if [[  $linkLife < 0  ]]
+			then
+				echo -ne '\033c'
+				showDeath
+				exit 1 
+			fi
 			echo -ne '\033c'
 		done
-		if [[ $id > 2 ]]
-		then 
-			grepShuffleEnemies
-			setEnemies
-		fi 
 	done 
 	
 }
