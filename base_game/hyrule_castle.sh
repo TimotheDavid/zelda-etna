@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 base="$(pwd)/base_game/files"
 shuffleBosses=()
