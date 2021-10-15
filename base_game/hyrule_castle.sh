@@ -1,7 +1,9 @@
 #/bin/sh
 
 base="/home/devretry/Bureau/etna/zelda/base_game/files"
-
+shuffleBosses=()
+shuffleEnemies=()
+shufflePlayers=()
 bossesLine=""
 enemiesLine=""
 playersLine=""
@@ -21,7 +23,6 @@ grepBosses( ){
                 line=$( echo $lines | cut -d "," -f1 )
 		if [[ $line -eq $1 ]]
                 then
-			echo $lines
                         bossesLine=$lines
                 fi
         done < <(tail -n +2  "$base/bosses.csv")
@@ -41,7 +42,6 @@ grepEnemies( ){
 }
 
 grepPlayers( ){
-	echo $1
 	while IFS=',' read -r lines
         do
                 line=$( echo $lines | cut -d "," -f1 )
@@ -51,6 +51,24 @@ grepPlayers( ){
                 fi
         done < <(tail -n +2  "$base/players.csv")
 
+}
+
+grepShuffleBosses( ){
+	file="$base/bosses.csv"
+	lastLinesBosses=$( tail -1 $file | cut -d ',' -f1  ) 
+	for ((lines=0; lines<$lastLinesBosses ; lines++ ))
+	do 
+		id=$(tail -n +2  $file  | cut -d ',' -f1 )
+		rarity=$(tail -n +2  $file | cut -d ',' -f13 )
+	for i in $rarity 
+		do
+			shuffleBosses+=($id)
+		done 
+	done
+	shuffleBosses=$(shuf -e "${shuffleBosses[@]}")
+	randomIndex=$[$RANDOM % ${#shuffleBosses[@]}]
+	index=${shuffleBosses[$indexBosses]}
+	grepBosses $index
 }
 
 showLifeEnemies ( ){
@@ -90,6 +108,8 @@ showLifeLink ( ){
 	echo $bar
 }
 
+
+
 showOptions ( ){
 	echo ""
 	echo "---Options----------"
@@ -120,6 +140,8 @@ attaque ( ){
 
 }
 
+
+
 main( ){
 	
 	for (( id=1; id<11; id++ ))
@@ -142,4 +164,9 @@ main( ){
 	
 }
 
-main $1 
+testing ( ){
+	grepShuffleBosses
+	echo $bossesLine
+}
+testing 
+#main $1 
