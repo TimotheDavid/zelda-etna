@@ -1,6 +1,6 @@
-#/bin/sh
+#!/bin/sh
 
-base="/home/devretry/Bureau/etna/zelda/base_game/files"
+base="$(pwd)/base_game/files"
 shuffleBosses=()
 shuffleEnemies=()
 shufflePlayers=()
