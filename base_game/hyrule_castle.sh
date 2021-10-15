@@ -15,7 +15,7 @@ linkStr=0
 bossLife=0
 bossStr=0
 linkLifeBar=""
-id=0
+combat_id=0
 
 
 grepBosses( ){
@@ -61,15 +61,15 @@ grepShuffleBosses( ){
 	lastLines=$( tail -1 $file | cut -d ',' -f1  ) 
 	for ((lines=0; lines<$lastLines ; lines++ ))
 	do 
-		id=$(tail -n +2  $file  | cut -d ',' -f1 )
+		combat_id=$(tail -n +2  $file  | cut -d ',' -f1 )
 		rarity=$(tail -n +2  $file | cut -d ',' -f13 )
 	for i in $rarity 
 		do
-			shuffleBosses+=($id)
+			shuffleBosses+=($combat_id)
 		done 
 	done
 	shuffleBosses=$(shuf -e "${shuffleBosses[@]}")
-	randomIndex=$[$RANDOM % ${#shuffleBosses[@]}]
+	randomIndex=$(($RANDOM % ${#shuffleBosses[@]}))
 	index=${shuffleBosses[$randomIndex]}
 	grepBosses $index
 }
@@ -79,15 +79,15 @@ grepShufflePlayers( ){
         lastLines=$( tail -1 $file | cut -d ',' -f1  )
         for ((lines=0; lines<$lastLines ; lines++ ))
         do
-                id=$( tail -n +2  $file  | cut -d ',' -f1 )
+                combat_id=$( tail -n +2  $file  | cut -d ',' -f1 )
                 rarity=$( tail -n +2  $file | cut -d ',' -f13 )
         for i in $rarity
                 do
-                        shufflePlayers+=($id)
+                        shufflePlayers+=($combat_id)
                 done
         done
         shufflePlayers=$(shuf -e "${shufflePlayers[@]}")
-        randomIndex=$[$RANDOM % ${#shufflePlayers[@]}]
+        randomIndex=$(($RANDOM % ${#shufflePlayers[@]}))
         index=${shufflePlayers[$randomIndex]}
 	grepPlayers $index
 }
@@ -97,15 +97,15 @@ grepShuffleEnemies( ){
         lastLines=$( tail -1 $file | cut -d ',' -f1  )
 	for ((lines=0; lines<$lastLines ; lines++ ))
         do
-                id=$(tail -n +2  $file  | cut -d ',' -f1 )
+                combat_id=$(tail -n +2  $file  | cut -d ',' -f1 )
                 rarity=$(tail -n +2  $file | cut -d ',' -f13 ) 
 		for i in $rarity
                 do
-                        shuffleEnemies+=($id)
+                        shuffleEnemies+=($combat_id)
                 done
         done
 	shuffleEnemies=$(shuf -e "${shuffleEnemies[@]}")
-        randomIndex=$[$RANDOM % ${#shuffleEnemies[@]}]
+        randomIndex=$(($RANDOM % ${#shuffleEnemies[@]}))
         index=${shuffleEnemies[$randomIndex]}
 	echo $index 
 	grepEnemies $index
@@ -178,20 +178,18 @@ showHeader( ){
 }
 
 attaque ( ){
-	if  [ $1 -eq 1 ]
+	if  [[ $1 -eq 1 ]]
 	then
-		enemiesLife=$(( enemiesLife -= $linkStr ))
-	fi
-
-	if [ $1 -eq 2 ]
-	then
-		if [[ $linkLife -lt 30 ]]
+		enemiesLife=$(( enemiesLife -= linkStr ))
+		if [[ $enemiesLife -lt 0 ]]
 		then
-			linkLife=35
+			enemiesLife=0
 		fi
-
+	elif [[ $1 -eq 2 && $linkLife -lt 30 ]]
+	then
+		linkLife=35
 	fi
-	 linkLife=$(( linkLife -= $enemiesStr ))
+	 linkLife=$(( linkLife -= enemiesStr ))
 
 }
 
@@ -204,12 +202,12 @@ main( ){
 	setBoss
 	grepShuffleEnemies
 	setEnemies
-	for (( id=1; id<11; id++ ))
+	for (( combat_id=1; combat_id<=10; combat_id++ ))
 	do
 		echo -ne '\033c'
 		while [[ $enemiesLife -gt 1 ]]
 		do
-			showHeader $id
+			showHeader $combat_id
 			showLifeEnemies
 			showLifeLink
 			showOptions
@@ -217,7 +215,7 @@ main( ){
 			attaque $attaqueOptions
 			echo -ne '\033c'
 		done
-		if [[ $id > 2 ]]
+		if [[ $combat_id -gt 2 ]]
 		then 
 			grepShuffleEnemies
 			setEnemies
