@@ -32,16 +32,14 @@ grepBosses( ){
 }
 
 grepEnemies( ){
-	echo $1
 	while IFS=',' read -r lines
-        do
-                line=$( echo $lines | cut -d "," -f1 )
-                if [[ $line -eq $1 ]]
-                then
-                       enemiesLine=$lines
-                fi
-        done < <(tail -n +2  "$base/enemies.csv")
-	echo $enemiesLine
+	do
+		line=$( echo $lines | cut -d "," -f1 )
+		if [[ $line -eq $1 ]]
+		then
+			enemiesLine=$lines
+		fi
+	done < <(tail -n +2  "$base/enemies.csv")
 }
 
 grepPlayers( ){
@@ -75,39 +73,38 @@ grepShuffleBosses( ){
 }
 
 grepShufflePlayers( ){
-        file="$base/players.csv"
-        lastLines=$( tail -1 $file | cut -d ',' -f1  )
-        for ((lines=0; lines<$lastLines ; lines++ ))
-        do
-                combat_id=$( tail -n +2  $file  | cut -d ',' -f1 )
-                rarity=$( tail -n +2  $file | cut -d ',' -f13 )
-        for i in $rarity
-                do
-                        shufflePlayers+=($combat_id)
-                done
-        done
-        shufflePlayers=$(shuf -e "${shufflePlayers[@]}")
-        randomIndex=$(($RANDOM % ${#shufflePlayers[@]}))
-        index=${shufflePlayers[$randomIndex]}
+	file="$base/players.csv"
+	lastLines=$( tail -1 $file | cut -d ',' -f1  )
+	for ((lines=0; lines<$lastLines ; lines++ ))
+	do
+			combat_id=$( tail -n +2  $file  | cut -d ',' -f1 )
+			rarity=$( tail -n +2  $file | cut -d ',' -f13 )
+	for i in $rarity
+			do
+					shufflePlayers+=("$combat_id")
+			done
+	done
+	shufflePlayers=$(shuf -e "${shufflePlayers[@]}")
+	randomIndex=$(($RANDOM % ${#shufflePlayers[@]}))
+	index=${shufflePlayers[$randomIndex]}
 	grepPlayers $index
 }
 
 grepShuffleEnemies( ){
         file="$base/enemies.csv"
         lastLines=$( tail -1 $file | cut -d ',' -f1  )
-	for ((lines=0; lines<$lastLines ; lines++ ))
-        do
-                combat_id=$(tail -n +2  $file  | cut -d ',' -f1 )
-                rarity=$(tail -n +2  $file | cut -d ',' -f13 ) 
-		for i in $rarity
-                do
-                        shuffleEnemies+=($combat_id)
-                done
+		for ((lines=0; lines<$lastLines ; lines++ ))
+		do
+			combat_id=$(tail -n +2  $file  | cut -d ',' -f1 )
+			rarity=$(tail -n +2  $file | cut -d ',' -f13 ) 
+			for i in $rarity
+			do
+				shuffleEnemies+=($combat_id)
+			done
         done
-	shuffleEnemies=$(shuf -e "${shuffleEnemies[@]}")
+		shuffleEnemies=$(shuf -e "${shuffleEnemies[@]}")
         randomIndex=$(($RANDOM % ${#shuffleEnemies[@]}))
         index=${shuffleEnemies[$randomIndex]}
-	echo $index 
 	grepEnemies $index
 }
 
@@ -151,18 +148,18 @@ showLifeLink ( ){
 }
 
 setEnemies( ){
-	enemiesLife=$( echo $enemiesLine | cut -d ',' -f3 )
-	enemiesStr=$( echo $enemiesLine | cut -d ',' -f5 )
+	enemiesLife=$( echo $enemiesLine | cut -d ',' -f 3 )
+	enemiesStr=$( echo $enemiesLine | cut -d ',' -f 5 )
 }
 
 setPlayers( ){
-        linkLife=$( echo $playersLine | cut -d ',' -f3 )
-        linkStr=$( echo $playersLine | cut -d ',' -f5 )
+        linkLife=$( echo $playersLine | cut -d ',' -f 3 )
+        linkStr=$( echo $playersLine | cut -d ',' -f 5 )
 }
 
 setBoss( ){
-        bossLife=$( echo $bossesLine | cut -d ',' -f3 )
-        bossStr=$( echo $bossesLine | cut -d ',' -f5 )
+        bossLife=$( echo $bossesLine | cut -d ',' -f 3 )
+        bossStr=$( echo $bossesLine | cut -d ',' -f 5 )
 }
 
 showOptions ( ){
@@ -202,8 +199,9 @@ main( ){
 	setBoss
 	grepShuffleEnemies
 	setEnemies
-	for (( combat_id=1; combat_id<=10; combat_id++ ))
+	for i in `seq 1 10`;
 	do
+		combat_id=$i
 		echo -ne '\033c'
 		while [[ $enemiesLife -gt 1 ]]
 		do
