@@ -230,6 +230,7 @@ attaque ( ){
 
 
 main( ){
+
 	grepShufflePlayers
 	setPlayers
 	grepShuffleBosses
