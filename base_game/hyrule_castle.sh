@@ -248,7 +248,7 @@ attaqueBoss ( ){
 			linkLife="$linkTotalLife"
 		fi
 	fi
-	 linkLife=$(( linkLife - bossStr ))
+	linkLife=$(( linkLife - bossStr ))
 
 }
 
