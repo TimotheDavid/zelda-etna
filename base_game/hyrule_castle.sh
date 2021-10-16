@@ -216,7 +216,7 @@ attaque ( ){
 	if  [[ $1 -eq 1 ]]
 	then
 		enemiesLife=$(( enemiesLife -= linkStr ))
-		if [[ $enemiesLife -lt 0 ]]
+		if [[ $enemiesLife -lt 1 ]]
 		then
 			enemiesLife=0
 		fi
@@ -236,7 +236,7 @@ attaqueBoss ( ){
 	if  [[ $1 -eq 1 ]]
 	then
 		bossLife=$(( bossLife -= linkStr ))
-		if [[ $bossLife -lt 0 ]]
+		if [[ $bossLife -lt 1 ]]
 		then
 			bossLife=0
 		fi
@@ -264,7 +264,7 @@ main( ){
 		clear
 		while [ $enemiesLife -gt 1 ]
 		do
-			if [ $linkLife -lt 0 ]
+			if [ $linkLife -lt 1 ]
 			then 
 				clear
 				showDeath
@@ -272,18 +272,18 @@ main( ){
 			fi
 			if [ $combat_id -gt 9 ]
 			then
-				if [ $bossLife -lt 0 ]
-				then 
-					clear
-					showSuccess
-					exit 1			
-				fi
 				showHeader "Boss"
 				showLifeBoss
 				showLifeLink
 				showOptions
 				read attaqueOptions
 				attaqueBoss $attaqueOptions
+				if [ $bossLife -lt 0 ]
+				then 
+					clear
+					showSuccess
+					exit 1			
+				fi
 			else
 				showHeader $combat_id
 				showLifeEnemies
