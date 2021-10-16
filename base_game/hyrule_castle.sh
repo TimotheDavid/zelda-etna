@@ -10,11 +10,10 @@ playersLine=""
 enemiesLifeBar=""
 enemiesLife=0
 enemiesStr=O
-enemiesTotalLife=0
+enmiesTotalLife=0
 linkLife=0
 linkStr=0
 linkTotalLife=0
-link
 bossLife=0
 bossStr=0
 bossTotalLife=0
@@ -106,6 +105,7 @@ grepShuffleEnemies( ){
                 done
         done
 	randomIndex=$(($RANDOM % ${#shuffleEnemies[@]}))
+    echo " index $randomIndex"
 	index=${shuffleEnemies[$randomIndex]}
 	grepEnemies $index
 }
@@ -125,7 +125,7 @@ showLifeEnemies ( ){
 		bar="${bar}_"
 	done
 	
-	bar="HP: ${bar} ${enemiesLife} / 60"
+	bar="HP: ${bar} ${enemiesLife} / ${enmiesTotalLife}"
 
 	echo "$(tput setaf 2)Bokoblin"
 	echo $bar
@@ -144,50 +144,30 @@ showLifeLink ( ){
                 bar="${bar}_"
         done
 
-	bar="HP: ${bar} ${linkLife} / 60"
+	bar="HP: ${bar} ${linkLife} / ${linkTotalLife}"
 	echo ""
 	echo "$(tput setaf 1)Link"
 	echo $bar
 	
 }
 
-showBossLife ( ){
-
-	bar=''
-	for (( i=0; i < $bossLife; i++ ))
-	do
-		bar="${bar}I"
-	done
-
-	for (( i=$bossLife; i< 30; i++ ))
-	do
-		bar="${bar}_"
-	done
-	
-	bar="HP: ${bar} ${bossLife} / 60"
-
-	echo "$(tput setaf 2)Boss"
-	echo $bar
-
-}
-
-
-
-
 setEnemies( ){
 	enemiesLife=$( echo $enemiesLine | cut -d ',' -f3 )
 	enemiesStr=$( echo $enemiesLine | cut -d ',' -f5 )
+	enmiesTotalLife=$enemiesLife
 
 }
 
 setPlayers( ){
         linkLife=$( echo $playersLine | cut -d ',' -f3 )
         linkStr=$( echo $playersLine | cut -d ',' -f5 )
+		linkTotalLife=$LinkLife
 }
 
 setBoss( ){
         bossLife=$( echo $bossesLine | cut -d ',' -f3 )
         bossStr=$( echo $bossesLine | cut -d ',' -f5 )
+		bossTotalLife=$bossLife
 }
 
 showOptions ( ){
@@ -202,12 +182,12 @@ showHeader( ){
 	echo ""
 }
 
-
 showDeath( ){
 	echo "Ho link you are dead, hope you will try another time"
 	cat "$base/death.txt"
-}
 
+
+}
 
 attaque ( ){
 	if  [[ $1 -eq 1 ]]
@@ -217,7 +197,7 @@ attaque ( ){
 		then
 			enemiesLife=0
 		fi
-	elif [[ $1 -eq 2 && $linkLife -lt 30 ]]
+	elif [[ $1 -eq 2 && $linkLife -lt $(( $linkTotalLife / 2 )) ]]
 	then
 		linkLife=35
 	fi
@@ -227,10 +207,7 @@ attaque ( ){
 
 
 
-
-
 main( ){
-
 	grepShufflePlayers
 	setPlayers
 	grepShuffleBosses
@@ -239,33 +216,27 @@ main( ){
 	setEnemies
 	for (( combat_id=1; combat_id<=10; combat_id++ ))
 	do
-		clear
+		#echo -ne '\033c'
 		while [ $enemiesLife -gt 1 ]
 		do
 
 			if [ $linkLife -lt 0 ]
 			then 
-				clear
+				#echo -ne '\033c'
 				showDeath
 				exit 1
 				
 			
 			fi
 			showHeader $combat_id
-			if [ $combat_id -lt 9 ]
-			then
-				showLifeEnemies
-			else 
-				showBossLife
-			fi 
+			showLifeEnemies
 			showLifeLink
-
 			showOptions
 			read attaqueOptions
 			
 
 			attaque $attaqueOptions
-			clear 
+		#	echo -ne '\033c'
 
 		done
 		enemiesLife=0
