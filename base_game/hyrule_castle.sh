@@ -163,7 +163,7 @@ showLifeBoss( ){
                 bar="${bar}_"
         done
 
-	bar="HP: ${bar} ${linkLife} / $bossTotalLife"
+	bar="HP: ${bar} ${bossLife} / $bossTotalLife"
 	echo ""
 	echo "$(tput setaf 1)Boss"
 	echo $bar
@@ -205,8 +205,11 @@ showHeader( ){
 showDeath( ){
 	echo "Ho link you are dead, hope you will try another time"
 	cat "$base/death.txt"
+}
 
-
+showSuccess( ){
+	echo "Ho link Congratulations!"
+	cat "$base/death.txt"
 }
 
 attaque ( ){
@@ -217,15 +220,37 @@ attaque ( ){
 		then
 			enemiesLife=0
 		fi
-	elif [[ $1 -eq 2 && $linkLife -lt $(( $linkTotalLife / 2 )) ]]
+	elif [[ $1 -eq 2 ]]
 	then
-		linkLife=35
+		linkLife=$(( linkLife + (linkTotalLife / 2) ))
+		if [[ $linkLife -ge $linkTotalLife ]]
+		then
+			linkLife="$linkTotalLife"
+		fi
 	fi
-	 linkLife=$(( linkLife -= enemiesStr ))
+	 linkLife=$(( linkLife - enemiesStr ))
 
 }
 
+attaqueBoss ( ){
+	if  [[ $1 -eq 1 ]]
+	then
+		bossLife=$(( bossLife -= linkStr ))
+		if [[ $bossLife -lt 0 ]]
+		then
+			bossLife=0
+		fi
+	elif [[ $1 -eq 2 ]]
+	then
+		linkLife=$(( linkLife + (linkTotalLife / 2) ))
+		if [[ $linkLife -ge $linkTotalLife ]]
+		then
+			linkLife="$linkTotalLife"
+		fi
+	fi
+	 linkLife=$(( linkLife - bossStr ))
 
+}
 
 main( ){
 	grepShufflePlayers
@@ -239,42 +264,41 @@ main( ){
 		clear
 		while [ $enemiesLife -gt 1 ]
 		do
-
 			if [ $linkLife -lt 0 ]
 			then 
 				clear
 				showDeath
-				exit 1
-				
-			
+				exit 1			
 			fi
 			if [ $combat_id -gt 9 ]
 			then
+				if [ $bossLife -lt 0 ]
+				then 
+					clear
+					showSuccess
+					exit 1			
+				fi
 				showHeader "Boss"
 				showLifeBoss
+				showLifeLink
+				showOptions
+				read attaqueOptions
+				attaqueBoss $attaqueOptions
 			else
 				showHeader $combat_id
 				showLifeEnemies
-			fi
-			
-			showLifeLink
-			showOptions
-			read attaqueOptions
-			
-
-			attaque $attaqueOptions
+				showLifeLink
+				showOptions
+				read attaqueOptions
+				attaque $attaqueOptions
+			fi		
 			clear 
-
 		done
 		enemiesLife=0
 		enemiesStr=0
 		grepShuffleEnemies
 		setEnemies
-		
-
-	
-	done 
-	
+	done 	
 }
 
 main $1 
