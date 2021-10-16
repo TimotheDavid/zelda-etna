@@ -277,17 +277,4 @@ main( ){
 	
 }
 
-testing ( ){
-	grepShuffleBosses
-	setBoss
-	grepShufflePlayers
-	setPlayers
-	grepShuffleEnemies
-	setEnemies
-	echo " en $enemiesStr"
-	echo " boss $bossStr"
-	echo "lin $linkStr"
-
-}
-#testing 
 main $1 
