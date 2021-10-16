@@ -67,7 +67,6 @@ grepShuffleBosses( ){
 			shuffleBosses+=($combat_id)
 		done 
 	done
-	shuffleBosses=( $(shuf -e "${shuffleBosses[@]}"))
 	randomIndex=$(($RANDOM % ${#shuffleBosses[@]}))
 	index=${shuffleBosses[$randomIndex]}
 	grepBosses $index
@@ -85,7 +84,6 @@ grepShufflePlayers( ){
                         shufflePlayers+=($combat_id)
                 done
         done
-	shufflePlayers=($(shuf -e "${shufflePlayers[@]}"))
         randomIndex=$(($RANDOM % ${#shufflePlayers[@]}))
         index=${shufflePlayers[$randomIndex]}
 	grepPlayers $index
@@ -96,16 +94,16 @@ grepShuffleEnemies( ){
         lastLines=$( tail -1 $file | cut -d ',' -f1  )
 	for ((lines=0; lines<$lastLines ; lines++ ))
         do
-                combat_id=$(tail -n +2  $file  | cut -d ',' -f1 )
+                enemies_id=$(tail -n +2  $file  | cut -d ',' -f1 )
                 rarity=$(tail -n +2  $file | cut -d ',' -f13 ) 
 		for i in $rarity
                 do
-                        shuffleEnemies+=($combat_id)
+                        shuffleEnemies+=($enemies_id)
                 done
         done
-        shuffleEnemies=( $(shuf -e "${shuffleEnemies[@]}") )
 	randomIndex=$(($RANDOM % ${#shuffleEnemies[@]}))
-        index=${shuffleEnemies[$randomIndex]}
+    echo " index $randomIndex"
+	index=${shuffleEnemies[$randomIndex]}
 	grepEnemies $index
 }
 
@@ -128,6 +126,7 @@ showLifeEnemies ( ){
 
 	echo "$(tput setaf 2)Bokoblin"
 	echo $bar
+
 }
 
 showLifeLink ( ){
@@ -146,6 +145,7 @@ showLifeLink ( ){
 	echo ""
 	echo "$(tput setaf 1)Link"
 	echo $bar
+	
 }
 
 setEnemies( ){
@@ -176,6 +176,13 @@ showHeader( ){
 	echo ""
 }
 
+showDeath( ){
+	echo "Ho link you are dead, hope you will try another time"
+	cat "$base/death.txt"
+
+
+}
+
 attaque ( ){
 	if  [[ $1 -eq 1 ]]
 	then
@@ -199,20 +206,38 @@ main( ){
 	setPlayers
 	grepShuffleBosses
 	setBoss
+	grepShuffleEnemies
+	setEnemies
 	for (( combat_id=1; combat_id<=10; combat_id++ ))
 	do
-		echo $combat_id
 		#echo -ne '\033c'
 		while [ $enemiesLife -gt 1 ]
 		do
+
+			if [ $linkLife -lt 0 ]
+			then 
+				#echo -ne '\033c'
+				showDeath
+				exit 1
+				
+			
+			fi
 			showHeader $combat_id
 			showLifeEnemies
 			showLifeLink
 			showOptions
 			read attaqueOptions
+			
+
 			attaque $attaqueOptions
 		#	echo -ne '\033c'
+
 		done
+		enemiesLife=0
+		enemiesStr=0
+		grepShuffleEnemies
+		setEnemies
+		
 
 	
 	done 
