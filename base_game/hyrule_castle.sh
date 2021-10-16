@@ -15,7 +15,7 @@ linkStr=0
 bossLife=0
 bossStr=0
 linkLifeBar=""
-combat_id=0
+
 
 
 grepBosses( ){
@@ -59,11 +59,11 @@ grepShuffleBosses( ){
 	lastLines=$( tail -1 $file | cut -d ',' -f1  ) 
 	for ((lines=0; lines<$lastLines ; lines++ ))
 	do 
-		combat_id=$(tail -n +2  $file  | cut -d ',' -f1 )
+		boss_id=$(tail -n +2  $file  | cut -d ',' -f1 )
 		rarity=$(tail -n +2  $file | cut -d ',' -f13 )
 	for i in $rarity 
 		do
-			shuffleBosses+=($combat_id)
+			shuffleBosses+=("$boss_id")
 		done 
 	done
 	shuffleBosses=$(shuf -e "${shuffleBosses[@]}")
@@ -77,12 +77,12 @@ grepShufflePlayers( ){
 	lastLines=$( tail -1 $file | cut -d ',' -f1  )
 	for ((lines=0; lines<$lastLines ; lines++ ))
 	do
-			combat_id=$( tail -n +2  $file  | cut -d ',' -f1 )
+			player_id=$( tail -n +2  $file  | cut -d ',' -f1 )
 			rarity=$( tail -n +2  $file | cut -d ',' -f13 )
 	for i in $rarity
-			do
-					shufflePlayers+=("$combat_id")
-			done
+		do
+			shufflePlayers+=("$player_id")
+		done
 	done
 	shufflePlayers=$(shuf -e "${shufflePlayers[@]}")
 	randomIndex=$(($RANDOM % ${#shufflePlayers[@]}))
@@ -95,11 +95,11 @@ grepShuffleEnemies( ){
         lastLines=$( tail -1 $file | cut -d ',' -f1  )
 		for ((lines=0; lines<$lastLines ; lines++ ))
 		do
-			combat_id=$(tail -n +2  $file  | cut -d ',' -f1 )
+			enemy_id=$(tail -n +2  $file  | cut -d ',' -f1 )
 			rarity=$(tail -n +2  $file | cut -d ',' -f13 ) 
 			for i in $rarity
 			do
-				shuffleEnemies+=($combat_id)
+				shuffleEnemies+=("$enemy_id")
 			done
         done
 		shuffleEnemies=$(shuf -e "${shuffleEnemies[@]}")
@@ -111,7 +111,6 @@ grepShuffleEnemies( ){
 
 
 showLifeEnemies ( ){
-
 	bar=''
 	for (( i=0; i < $enemiesLife; i++ ))
 	do
@@ -199,10 +198,9 @@ main( ){
 	setBoss
 	grepShuffleEnemies
 	setEnemies
-	for i in `seq 1 10`;
+	for combat_id in $(seq 1 10);
 	do
-		combat_id=$i
-		echo -ne '\033c'
+		clear
 		while [[ $enemiesLife -gt 1 ]]
 		do
 			showHeader $combat_id
@@ -211,13 +209,13 @@ main( ){
 			showOptions
 			read attaqueOptions
 			attaque $attaqueOptions
-			echo -ne '\033c'
+			clear
 		done
 		if [[ $combat_id -gt 2 ]]
 		then 
 			grepShuffleEnemies
 			setEnemies
-		fi 
+		fi
 	done 
 	
 }
