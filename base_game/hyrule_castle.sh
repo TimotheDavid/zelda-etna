@@ -125,7 +125,7 @@ showLifeEnemies ( ){
 		bar="${bar}_"
 	done
 	
-	bar="HP: ${bar} ${enemiesLife} / ${enmiesTotalLife}"
+	bar="HP: ${bar} ${enemiesLife} / $enmiesTotalLife"
 
 	echo "$(tput setaf 2)Bokoblin"
 	echo $bar
@@ -144,7 +144,7 @@ showLifeLink ( ){
                 bar="${bar}_"
         done
 
-	bar="HP: ${bar} ${linkLife} / ${linkTotalLife}"
+	bar="HP: ${bar} ${linkLife} / $linkTotalLife"
 	echo ""
 	echo "$(tput setaf 1)Link"
 	echo $bar
@@ -161,7 +161,8 @@ setEnemies( ){
 setPlayers( ){
         linkLife=$( echo $playersLine | cut -d ',' -f3 )
         linkStr=$( echo $playersLine | cut -d ',' -f5 )
-		linkTotalLife=$LinkLife
+		linkTotalLife=$linkLife
+		
 }
 
 setBoss( ){
