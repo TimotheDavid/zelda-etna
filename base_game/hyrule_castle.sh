@@ -16,6 +16,7 @@ bossLife=0
 bossStr=0
 linkLifeBar=""
 combat_id=0
+hello=0
 
 
 grepBosses( ){
