@@ -120,7 +120,7 @@ showLifeEnemies ( ){
 		bar="${bar}I"
 	done
 
-	for (( i=$enemiesLife; i< 30; i++ ))
+	for (( i=$enemiesLife; i< $enmiesTotalLife; i++ ))
 	do
 		bar="${bar}_"
 	done
@@ -139,7 +139,7 @@ showLifeLink ( ){
                 bar="${bar}I"
         done
 
-	for (( i=$linkLife; i< 60; i++ ))
+	for (( i=$linkLife; i<$linkTotalLife; i++ ))
         do
                 bar="${bar}_"
         done
@@ -147,6 +147,25 @@ showLifeLink ( ){
 	bar="HP: ${bar} ${linkLife} / $linkTotalLife"
 	echo ""
 	echo "$(tput setaf 1)Link"
+	echo $bar
+	
+}
+
+showLifeBoss( ){
+        bar=''
+        for (( i=0; i < $bossLife; i++ ))
+        do
+                bar="${bar}I"
+        done
+
+	for (( i=$bossLife; i<$bossTotalLife ; i++ ))
+        do
+                bar="${bar}_"
+        done
+
+	bar="HP: ${bar} ${linkLife} / $bossTotalLife"
+	echo ""
+	echo "$(tput setaf 1)Boss"
 	echo $bar
 	
 }
@@ -217,27 +236,34 @@ main( ){
 	setEnemies
 	for (( combat_id=1; combat_id<=10; combat_id++ ))
 	do
-		#echo -ne '\033c'
+		clear
 		while [ $enemiesLife -gt 1 ]
 		do
 
 			if [ $linkLife -lt 0 ]
 			then 
-				#echo -ne '\033c'
+				clear
 				showDeath
 				exit 1
 				
 			
 			fi
-			showHeader $combat_id
-			showLifeEnemies
+			if [ $combat_id -gt 9 ]
+			then
+				showHeader "Boss"
+				showLifeBoss
+			else
+				showHeader $combat_id
+				showLifeEnemies
+			fi
+			
 			showLifeLink
 			showOptions
 			read attaqueOptions
 			
 
 			attaque $attaqueOptions
-		#	echo -ne '\033c'
+			clear 
 
 		done
 		enemiesLife=0
